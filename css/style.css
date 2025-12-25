@@ -1,0 +1,187 @@
+/* =========================================
+   1. 全局基础设置 (Global Base)
+   ========================================= */
+body {
+    font-family: 'Inter', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* =========================================
+   2. 背景与纹理 (Backgrounds)
+   ========================================= */
+/* 首页 Hero 背景 */
+.hero-bg {
+    background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%);
+    position: relative;
+}
+
+/* 首页点阵纹理 */
+.hero-pattern {
+    background-image: radial-gradient(#3B82F6 1px, transparent 1px);
+    background-size: 30px 30px;
+    opacity: 0.1;
+}
+
+/* =========================================
+   3. 组件样式 (Components)
+   ========================================= */
+
+/* --- 导航栏 --- */
+.glass-nav {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(241, 245, 249, 0.8);
+}
+
+/* --- 通用卡片悬停效果 --- */
+.hover-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* --- 玻璃拟态卡片 (Dashboard 核心) --- */
+.glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 
+                0 10px 15px -3px rgba(0, 0, 0, 0.05),
+                inset 0 0 20px rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+/* 深色模式或强调模式下的玻璃卡片 */
+.glass-card:hover {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(59, 130, 246, 0.3); /* Blue-500 */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+                0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+/* --- 数据大数字渐变色 --- */
+.data-gradient-text {
+    background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent; /* Fallback */
+    font-weight: 800;
+}
+
+/* =========================================
+   4. 动画与特效 (Animations & Effects)
+   ========================================= */
+
+/* 淡入动画 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* 状态呼吸灯 (Status Pulse) */
+.status-pulse {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+.status-pulse::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #22C55E; /* Green-500 */
+    border-radius: 50%;
+    left: -14px; 
+    box-shadow: 0 0 0 rgba(34, 197, 94, 0.4);
+    animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+@keyframes pulse-ring {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+/* 缓慢弹跳 (地图标记用) */
+@keyframes bounce-slow {
+    0%, 100% { transform: translateY(-5%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+    50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+}
+.animate-bounce-slow {
+    animation: bounce-slow 3s infinite;
+}
+
+/* =========================================
+   5. GIS 地图特有样式 (GIS Map 3D)
+   ========================================= */
+
+/* 3D 容器透视保持 */
+.preserve-3d {
+    transform-style: preserve-3d;
+}
+
+/* 地图图层切换按钮 */
+.map-layer-btn {
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+.map-layer-btn:hover {
+    background-color: #F8FAFC; /* Slate-50 */
+}
+.map-layer-btn.active {
+    background-color: #EFF6FF; /* Blue-50 */
+    color: #2563EB; /* Blue-600 */
+    border-left-color: #2563EB;
+}
+
+/* 地图节点基础样式 */
+.map-node {
+    transition: all 0.5s ease-in-out;
+}
+
+/* =========================================
+   6. 滚动条美化 (Custom Scrollbar)
+   ========================================= */
+/* Webkit 浏览器 (Chrome, Safari, Edge) */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #CBD5E1; /* Slate-300 */
+    border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8; /* Slate-400 */
+}
+
+/* 为所有可能滚动的区域应用 */
+body::-webkit-scrollbar {
+    width: 8px;
+}
+body::-webkit-scrollbar-track {
+    background: #F8FAFC;
+}
+body::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+}

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个性化DAPP应用中心 - 苏州产业园区运营平台</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <style>
+        /* 顶部企业视角的特殊渐变背景 */
+        .app-header-bg {
+            background: linear-gradient(120deg, #1e3a8a 0%, #2563eb 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        /* 装饰背景圆 */
+        .app-header-bg::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        /* 应用卡片交互样式 */
+        .app-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #f1f5f9;
+        }
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border-color: #bfdbfe;
+        }
+        
+        /* 进度条动画 */
+        @keyframes progress { from { width: 0; } to { width: 65%; } }
+        .progress-animate { animation: progress 1.5s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-600 font-sans flex flex-col min-h-screen">
+
+    <div id="navbar-placeholder"></div>
+
+    <main class="flex-1">
+        
+        <section class="pt-32 pb-16 app-header-bg text-white">
+            <div class="container mx-auto px-4 lg:px-12 relative z-10">
+                <div class="flex flex-col md:flex-row justify-between items-end gap-6">
+                    <div>
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="bg-blue-500/30 border border-blue-400/50 px-3 py-1 rounded-full text-xs font-bold tracking-wide backdrop-blur-sm flex items-center">
+                                <i class="fa-solid fa-building-user mr-2"></i> 当前企业视图
+                            </span>
+                        </div>
+                        <h1 class="text-3xl font-bold mb-3 tracking-tight">苏州XX生物科技有限公司</h1>
+                        <div class="flex flex-wrap gap-3 text-sm text-blue-100 opacity-90">
+                            <span class="flex items-center gap-1.5 bg-white/10 px-2 py-1 rounded"><i class="fa-solid fa-tag text-yellow-300"></i> 高新技术企业</span>
+                            <span class="flex items-center gap-1.5 bg-white/10 px-2 py-1 rounded"><i class="fa-solid fa-flask text-green-300"></i> 生物医药产业园</span>
+                            <span class="flex items-center gap-1.5 bg-white/10 px-2 py-1 rounded"><i class="fa-solid fa-layer-group text-purple-300"></i> 瞪羚企业</span>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full md:w-auto">
+                        <div class="relative group">
+                            <input type="text" placeholder="搜索服务应用 (如: 申报)..." class="w-full md:w-80 bg-white/10 border border-white/20 text-white placeholder-blue-200 rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:bg-white/20 transition-all backdrop-blur-sm shadow-lg">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-blue-200 group-focus-within:text-white transition-colors"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-12 -mt-8 relative z-20">
+            <div class="container mx-auto px-4 lg:px-12">
+                
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-3">
+                        <span class="w-1.5 h-6 bg-blue-600 rounded-full"></span>
+                        为您推荐的核心 DAPP
+                    </h2>
+                    <button class="text-sm text-blue-600 hover:text-blue-800 font-medium hover:underline flex items-center gap-1">
+                        管理我的应用 <i class="fa-solid fa-gear text-xs"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                    <div class="bg-white rounded-2xl p-6 app-card group cursor-pointer relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-bl-xl shadow-md">3条新政</div>
+                        
+                        <div class="flex items-start justify-between mb-5">
+                            <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl group-hover:bg-blue-600 group-hover:text-white transition-colors shadow-sm">
+                                <i class="fa-solid fa-file-signature"></i>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+                                <i class="fa-solid fa-arrow-right text-slate-400 group-hover:text-blue-600"></i>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-lg font-bold text-slate-800 mb-1">个性化政策服务</h3>
+                        <p class="text-xs text-slate-400 mb-5 h-8 leading-relaxed">基于企业画像精准推送，政策找人，不再漏报。</p>
+                        
+                        <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                            <div class="flex justify-between items-center text-xs mb-1.5">
+                                <span class="text-slate-500 font-medium">智能匹配度</span>
+                                <span class="text-blue-600 font-black">98%</span>
+                            </div>
+                            <div class="text-xs text-slate-700 truncate font-medium flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> 2025生物医药研发补贴...
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 app-card group cursor-pointer">
+                        <div class="flex items-start justify-between mb-5">
+                            <div class="w-14 h-14 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-2xl group-hover:bg-orange-600 group-hover:text-white transition-colors shadow-sm">
+                                <i class="fa-solid fa-certificate"></i>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-orange-50 transition-colors">
+                                <i class="fa-solid fa-arrow-right text-slate-400 group-hover:text-orange-600"></i>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-lg font-bold text-slate-800 mb-1">高企申报服务</h3>
+                        <p class="text-xs text-slate-400 mb-5 h-8 leading-relaxed">数据自动采集，直连火炬系统，全程进度可视。</p>
+                        
+                        <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                            <div class="flex justify-between text-xs mb-1.5">
+                                <span class="text-slate-500 font-medium">申报倒计时</span>
+                                <span class="text-orange-500 font-black">12 天</span>
+                            </div>
+                            <div class="w-full bg-slate-200 rounded-full h-1.5 mt-2">
+                                <div class="bg-orange-500 h-1.5 rounded-full progress-animate shadow-[0_0_8px_rgba(249,115,22,0.5)]" style="width: 65%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 app-card group cursor-pointer">
+                        <div class="flex items-start justify-between mb-5">
+                            <div class="w-14 h-14 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center text-2xl group-hover:bg-green-600 group-hover:text-white transition-colors shadow-sm">
+                                <i class="fa-solid fa-seedling"></i>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-green-50 transition-colors">
+                                <i class="fa-solid fa-arrow-right text-slate-400 group-hover:text-green-600"></i>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-lg font-bold text-slate-800 mb-1">孵化企业培育</h3>
+                        <p class="text-xs text-slate-400 mb-5 h-8 leading-relaxed">导师、场地、资金一站式对接，助力快速成长。</p>
+                        
+                        <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 grid grid-cols-2 gap-2 divide-x divide-slate-200">
+                            <div class="text-center pr-2">
+                                <div class="text-[10px] text-slate-400 mb-0.5">创业导师</div>
+                                <div class="text-xs font-bold text-green-600">可预约</div>
+                            </div>
+                            <div class="text-center pl-2">
+                                <div class="text-[10px] text-slate-400 mb-0.5">孵化场地</div>
+                                <div class="text-xs font-bold text-slate-700">余 3 间</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 app-card group cursor-pointer">
+                        <div class="flex items-start justify-between mb-5">
+                            <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl group-hover:bg-purple-600 group-hover:text-white transition-colors shadow-sm">
+                                <i class="fa-solid fa-hand-holding-dollar"></i>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-purple-50 transition-colors">
+                                <i class="fa-solid fa-arrow-right text-slate-400 group-hover:text-purple-600"></i>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-lg font-bold text-slate-800 mb-1">政策补贴一站式</h3>
+                        <p class="text-xs text-slate-400 mb-5 h-8 leading-relaxed">智能计算补贴额度，在线一键申领。</p>
+                        
+                        <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <span class="text-slate-500 font-medium">预计可申领</span>
+                            </div>
+                            <div class="text-xl font-black text-purple-600 tracking-tight">
+                                ¥ 500,000
+                            </div>
+                            <div class="text-[10px] text-purple-400 mt-1 flex items-center gap-1">
+                                <i class="fa-solid fa-circle-exclamation"></i> 需补充上一年度财报
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section class="pb-20">
+            <div class="container mx-auto px-4 lg:px-12">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+                    <div class="flex items-center gap-8 border-b border-slate-100 pb-0 mb-6">
+                        <button class="font-bold text-blue-600 border-b-2 border-blue-600 pb-4 px-1 transition-colors">全部应用</button>
+                        <button class="font-medium text-slate-500 hover:text-slate-800 hover:border-slate-300 border-b-2 border-transparent pb-4 px-1 transition-all">金融服务</button>
+                        <button class="font-medium text-slate-500 hover:text-slate-800 hover:border-slate-300 border-b-2 border-transparent pb-4 px-1 transition-all">人力资源</button>
+                        <button class="font-medium text-slate-500 hover:text-slate-800 hover:border-slate-300 border-b-2 border-transparent pb-4 px-1 transition-all">法律咨询</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        
+                        <div class="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 cursor-pointer group">
+                            <div class="w-12 h-12 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl shadow-sm group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-briefcase"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-slate-700 text-sm mb-0.5">知识产权法律援助</h4>
+                                <p class="text-xs text-slate-400">对接专业律所确权</p>
+                            </div>
+                            <button class="text-xs bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-slate-600 group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600 transition-all shadow-sm">
+                                打开
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 cursor-pointer group">
+                            <div class="w-12 h-12 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center text-xl shadow-sm group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-users-viewfinder"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-slate-700 text-sm mb-0.5">紧缺人才招聘</h4>
+                                <p class="text-xs text-slate-400">园区人才库直推</p>
+                            </div>
+                            <button class="text-xs bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-slate-600 group-hover:bg-teal-600 group-hover:text-white group-hover:border-teal-600 transition-all shadow-sm">
+                                打开
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 cursor-pointer group">
+                            <div class="w-12 h-12 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center text-xl shadow-sm group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-slate-700 text-sm mb-0.5">企业云盘服务</h4>
+                                <p class="text-xs text-slate-400">安全存储与共享</p>
+                            </div>
+                            <button class="text-xs bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-slate-600 group-hover:bg-pink-600 group-hover:text-white group-hover:border-pink-600 transition-all shadow-sm">
+                                打开
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-12 mt-auto">
+        <div class="container mx-auto px-4 lg:px-12 text-center">
+            <div class="flex justify-center items-center gap-2 mb-4 text-blue-600 text-xl font-bold">
+                <i class="fa-solid fa-city"></i> 苏州产业园区运营大脑
+            </div>
+            <p class="text-slate-400 text-sm">Copyright © 2025 Suzhou Industrial Park Operation Platform. All rights reserved.</p>
+            <p class="text-slate-400 text-xs mt-2">技术支持：全国统一技术交易服务平台总中心</p>
+        </div>
+    </footer>
+
+    <script src="../../js/components/navbar.js"></script>
+
+</body>
+</html>

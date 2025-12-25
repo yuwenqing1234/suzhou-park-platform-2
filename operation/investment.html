@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>招商引资智能工作台 - 苏州产业园区运营大脑</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <style>
+        .investment-bg { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); }
+        .chat-bubble-ai { background: white; border-radius: 0 16px 16px 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .filter-tag { cursor: pointer; transition: all 0.2s; border: 1px solid #e2e8f0; background: white; }
+        .filter-tag:hover { background: #eff6ff; border-color: #3b82f6; color: #2563eb; }
+        .filter-tag.active { background: #2563eb !important; color: white !important; border-color: #2563eb; font-weight: bold; }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="investment-bg text-slate-700 pt-20">
+
+    <div id="navbar-placeholder"></div>
+
+    <main class="container mx-auto px-4 lg:px-12 py-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div>
+                <span class="text-blue-600 font-bold tracking-widest text-xs uppercase">Investment Intelligence</span>
+                <h1 class="text-3xl font-extrabold text-slate-800 mt-1">招商引资智能工作台</h1>
+                <p class="text-slate-500 mt-2 text-sm">对接总平台数据实验室 AI 筛选匹配、手工筛选等方式拟定名单 </p>
+            </div>
+            <div class="flex gap-3">
+                <button class="bg-white border border-slate-300 text-slate-700 px-5 py-2.5 rounded-xl font-bold hover:bg-slate-50 transition-all flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-cloud-arrow-up text-blue-600"></i> 导入现有企业数据
+                </button>
+                <button class="bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg hover:bg-slate-800 transition-all flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-list-check"></i> 拟招商名单 <span id="list-count" class="bg-blue-500 text-[10px] px-1.5 py-0.5 rounded-full ml-1">0</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-8 space-y-6">
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center text-white shadow-lg"><i class="fa-solid fa-robot"></i></div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-base">总平台 AI 招商专家</h3>
+                            <p class="text-[10px] text-slate-400">已连接总平台 AI 数据实验室 [cite: 57, 183]</p>
+                        </div>
+                    </div>
+                    <div class="chat-bubble-ai p-4 border border-slate-50 mb-4">
+                        <p class="text-sm leading-relaxed">
+                            正在分析园区现有企业与长三角产业图谱匹配度... [cite: 183, 193] <br>
+                            检测到 <strong>“高纯度层析介质”</strong> 环节本地化配套率不足 15%，建议优先引入该领域补链企业 。
+                        </p>
+                    </div>
+                    <div class="relative">
+                        <input type="text" placeholder="输入需求：筛选长三角区域估值过亿的高企..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 pr-16 outline-none focus:ring-2 focus:ring-blue-500/20">
+                        <button class="absolute right-3 top-2.5 w-10 h-10 bg-slate-900 text-white rounded-xl"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-xl text-slate-800 mb-6">拟招商企业库 (初步筛选)</h3>
+                    
+                    <div id="filter-tabs" class="flex flex-wrap gap-2 mb-8 bg-slate-50 p-4 rounded-2xl border border-dashed border-slate-200">
+                        <button onclick="handleTabClick(this, 'all')" class="filter-tag active px-4 py-1.5 rounded-full text-xs font-bold">全部潜力企业</button>
+                        <button onclick="handleTabClick(this, 'supply-chain')" class="filter-tag px-4 py-1.5 rounded-full text-xs font-medium">补链强链 <i class="fa-solid fa-link ml-1 text-[10px]"></i></button>
+                        <button onclick="handleTabClick(this, 'high-value')" class="filter-tag px-4 py-1.5 rounded-full text-xs font-medium">估值 > 10亿</button>
+                        <button onclick="handleTabClick(this, 'yangtze')" class="filter-tag px-4 py-1.5 rounded-full text-xs font-medium">长三角区域</button>
+                        <button onclick="handleTabClick(this, 'hi-tech')" class="filter-tag px-4 py-1.5 rounded-full text-xs font-medium">已获高企认证</button>
+                    </div>
+
+                    <div id="enterprise-list" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-slate-800 mb-6 flex justify-between">产业链缺口分析 <i class="fa-solid fa-chart-pie text-blue-500"></i></h3>
+                    <div id="chain-chart" style="height: 280px; width: 100%;"></div>
+                    <div class="mt-4 p-4 bg-orange-50 rounded-2xl border border-orange-100">
+                        <p class="text-[10px] font-bold text-orange-700 uppercase tracking-widest"><i class="fa-solid fa-triangle-exclamation"></i> 招商建议</p>
+                        <p class="text-[10px] text-orange-600 mt-2 leading-relaxed">材料环节本地配套缺失严重，建议通过“先用后转”政策引导相关企业入驻 [cite: 104, 183]。</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl">
+                    <div class="relative z-10">
+                        <h4 class="text-xs font-bold mb-8 uppercase tracking-widest text-slate-500">招商转化漏斗 [cite: 142]</h4>
+                        <div class="space-y-6">
+                            <div>
+                                <div class="flex justify-between text-[10px] mb-2 font-bold"><span>拟定名单</span><span>120 家</span></div>
+                                <div class="w-full bg-slate-800 h-1.5 rounded-full"><div class="bg-blue-500 w-[85%] h-full rounded-full"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-[10px] mb-2 font-bold"><span>已对接洽谈</span><span>15 家</span></div>
+                                <div class="w-full bg-slate-800 h-1.5 rounded-full"><div class="bg-emerald-500 w-[12%] h-full rounded-full"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-filter-circle-dollar absolute -right-4 -bottom-4 text-white/5 text-8xl"></i>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../js/components/navbar.js"></script>
+    <script>
+        // 1. 企业模拟库 
+        const mockDb = [
+            { id: 1, name: "北京芯智半导体", type: "supply-chain", value: 15, area: "beijing", hiTech: true, match: "98%", icon: "芯", color: "blue", desc: "高纯度层析介质核心供应商，填补园区材料环节缺失 。" },
+            { id: 2, name: "上海极智机器人", type: "yangtze", value: 8, area: "shanghai", hiTech: true, match: "92%", icon: "机", color: "indigo", desc: "长三角高成长企业，专注工业协作机器人研发 [cite: 203]。" },
+            { id: 3, name: "深圳云端生物", type: "high-value", value: 120, area: "shenzhen", hiTech: true, match: "89%", icon: "生", color: "emerald", desc: "生物制药独角兽，寻求华东生产基地，估值120亿 。" },
+            { id: 4, name: "杭州智造科技", type: "yangtze", value: 25, area: "hangzhou", hiTech: false, match: "85%", icon: "智", color: "purple", desc: "长三角数字化工厂服务商，补齐园区服务协同链 [cite: 205]。" },
+            { id: 5, name: "苏州纳微新材料", type: "supply-chain", value: 50, area: "suzhou", hiTech: true, match: "96%", icon: "纳", color: "cyan", desc: "本地关联补链项目，获高新技术企业认证 [cite: 185]。" }
+        ];
+
+        let listCount = 0;
+
+        // 2. 修复后的过滤渲染逻辑 
+        function renderEnterprises(filter) {
+            const list = document.getElementById('enterprise-list');
+            list.innerHTML = '';
+
+            const filtered = mockDb.filter(ent => {
+                if (filter === 'all') return true;
+                if (filter === 'supply-chain') return ent.type === 'supply-chain';
+                if (filter === 'high-value') return ent.value >= 10;
+                if (filter === 'yangtze') return ['shanghai', 'hangzhou'].includes(ent.area);
+                if (filter === 'hi-tech') return ent.hiTech === true;
+            });
+
+            filtered.forEach(ent => {
+                const card = `
+                    <div class="p-6 border border-slate-100 rounded-2xl hover:border-blue-400 transition-all bg-white shadow-sm animate-fade-in group">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-10 h-10 bg-${ent.color}-50 text-${ent.color}-600 rounded-xl flex items-center justify-center font-bold text-lg">${ent.icon}</div>
+                            <span class="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full font-bold">AI 匹配 ${ent.match}</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">${ent.name}</h4>
+                        <p class="text-[11px] text-slate-400 mt-2 line-clamp-2">${ent.desc}</p>
+                        <div class="mt-5 pt-4 border-t border-slate-50 flex justify-between items-center">
+                            <span class="text-[9px] text-slate-400 font-bold uppercase"><i class="fa-solid fa-location-dot mr-1"></i> ${ent.area}</span>
+                            <button onclick="addToList(this)" class="text-blue-600 font-bold text-[11px] hover:underline flex items-center gap-1">
+                                <i class="fa-solid fa-plus-circle"></i> 加入拟招商库
+                            </button>
+                        </div>
+                    </div>
+                `;
+                list.innerHTML += card;
+            });
+        }
+
+        function handleTabClick(btn, filter) {
+            document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            renderEnterprises(filter);
+        }
+
+        function addToList(btn) {
+            listCount++;
+            document.getElementById('list-count').innerText = listCount;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> 已加入名单';
+            btn.classList.replace('text-blue-600', 'text-green-600');
+            btn.disabled = true;
+        }
+
+        // 3. 修复后的图表初始化 
+        function initChainChart() {
+            const dom = document.getElementById('chain-chart');
+            if (!dom) return;
+            const myChart = echarts.init(dom);
+            const option = {
+                tooltip: { trigger: 'item' },
+                series: [{
+                    type: 'pie', radius: ['45%', '75%'], avoidLabelOverlap: false,
+                    itemStyle: { borderRadius: 12, borderColor: '#fff', borderWidth: 4 },
+                    label: { show: false },
+                    data: [
+                        { value: 45, name: '芯片设计', itemStyle: {color: '#3b82f6'} },
+                        { value: 30, name: '封装测试', itemStyle: {color: '#60a5fa'} },
+                        { value: 15, name: '缺失：核心材料', itemStyle: {color: '#f97316'} },
+                        { value: 10, name: '其他配套', itemStyle: {color: '#94a3b8'} }
+                    ]
+                }]
+            };
+            myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize());
+        }
+
+        // 核心修复：确保首屏加载即执行 
+        document.addEventListener('DOMContentLoaded', () => {
+            renderEnterprises('all'); // 默认展示全部
+            initChainChart();        // 初始化缺口分析图表
+        });
+    </script>
+</body>
+</html>

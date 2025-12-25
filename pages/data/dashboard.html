@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>园区综合数据看板 - 苏州产业园区运营平台</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <style>
+        /* 1. 3D 舞台容器 */
+        .map-stage {
+            perspective: 1200px; /* 视距，越大越平缓 */
+            overflow: hidden;
+        }
+
+        /* 2. 地图平面 (地板) - 负责倾斜 */
+        .map-plane {
+            position: absolute;
+            inset: -20%; /* 让地图比容器大，防止边缘穿帮 */
+            transform-style: preserve-3d;
+            transform: rotateX(55deg) scale(1.2); /* 核心倾斜角度 */
+            transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+            background-size: 60px 60px; /* 网格大小 */
+            background-color: #F8FAFC;
+        }
+
+        /* 鼠标悬停时，地图稍微浮起，增加交互感 */
+        .glass-card:hover .map-plane {
+            transform: rotateX(50deg) scale(1.25);
+        }
+
+        /* 3. 节点容器 (Billboard 技术) - 核心修复变形 */
+        /* 父级倾斜了 55deg，子级必须反向倾斜 -55deg 才能“站立” */
+        .map-node-wrapper {
+            position: absolute;
+            transform-style: preserve-3d;
+            transform: translate3d(0,0,20px) rotateX(-55deg); /* 关键修复代码 */
+            transition: all 0.4s ease;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        /* 悬停某个点时，该点放大并置顶 */
+        .map-node-wrapper:hover {
+            z-index: 50;
+            transform: translate3d(0,0,40px) rotateX(-55deg) scale(1.2);
+        }
+
+        /* 节点淡入动画 */
+        .node-enter {
+            animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popUp {
+            from { opacity: 0; transform: translate3d(0, 20px, 0) rotateX(-55deg) scale(0); }
+            to { opacity: 1; transform: translate3d(0, 0, 20px) rotateX(-55deg) scale(1); }
+        }
+
+        /* 装饰：模拟地图上的河流/道路 */
+        .map-river {
+            position: absolute;
+            top: 0; left: 40%;
+            width: 80px; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            filter: blur(10px);
+            transform: skewX(-15deg);
+        }
+
+        /* 滚动条微调 */
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+        
+        #radar-chart { min-height: 200px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans h-screen flex flex-col overflow-hidden">
+
+    <div id="navbar-placeholder"></div>
+
+    <main class="flex-1 p-6 pt-24 grid grid-cols-12 gap-6 overflow-hidden h-full">
+        
+        <div class="col-span-3 flex flex-col gap-6 h-full overflow-hidden">
+            <div class="glass-card p-6 rounded-3xl flex-1 flex flex-col overflow-hidden">
+                <div class="flex items-center gap-3 mb-6 shrink-0">
+                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shadow-sm">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800">政府公共数据能力</h3>
+                        <p class="text-[10px] text-slate-400 uppercase tracking-widest">Government Data Services</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                    <div class="bg-white/60 border border-slate-100 p-4 rounded-2xl hover:bg-white transition-colors cursor-default group">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-slate-500 group-hover:text-blue-600 transition-colors">工商画像库接入</span>
+                            <span class="text-[10px] text-green-600 font-mono bg-green-50 px-2 py-0.5 rounded-full">已联通</span>
+                        </div>
+                        <div class="text-2xl data-gradient-text">245,820 <small class="text-xs text-slate-400 font-normal">家企业</small></div>
+                        <p class="text-[10px] text-slate-400 mt-2">支持多维工商信用数据实时透视</p>
+                    </div>
+                    <div class="bg-white/60 border border-slate-100 p-4 rounded-2xl hover:bg-white transition-colors cursor-default group">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-slate-500 group-hover:text-blue-600 transition-colors">税务风险预警监测</span>
+                            <span class="text-[10px] text-blue-500 font-mono bg-blue-50 px-2 py-0.5 rounded-full">查询中</span>
+                        </div>
+                        <div class="text-2xl data-gradient-text">99.8% <small class="text-xs text-slate-400 font-normal">覆盖率</small></div>
+                        <p class="text-[10px] text-slate-400 mt-2">打通税务脱敏接口，实现财务合规监测</p>
+                    </div>
+                    <div class="bg-white/60 border border-slate-100 p-4 rounded-2xl hover:bg-white transition-colors cursor-default group">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-slate-500 group-hover:text-blue-600 transition-colors">人社信用等级数据</span>
+                            <span class="text-[10px] text-slate-400 font-mono bg-slate-100 px-2 py-0.5 rounded-full">T+1 同步</span>
+                        </div>
+                        <div class="text-2xl data-gradient-text">12 <small class="text-xs text-slate-400 font-normal">项关键指标</small></div>
+                        <p class="text-[10px] text-slate-400 mt-2">集成社保缴纳、用工稳定性评估数据</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-6 flex flex-col gap-6 h-full">
+            <div class="grid grid-cols-3 gap-6 shrink-0">
+                <div class="glass-card p-6 text-center rounded-2xl hover:scale-105 transition-transform">
+                    <div class="text-xs font-bold text-slate-400 uppercase mb-2">园区年度生产总值</div>
+                    <div class="text-3xl lg:text-4xl data-gradient-text">580.52 <span class="text-lg text-slate-500">亿</span></div>
+                    <div class="text-[10px] text-green-500 font-bold mt-2 bg-green-50 inline-block px-2 rounded">↑ 12.4% 同比增长</div>
+                </div>
+                <div class="glass-card p-6 text-center rounded-2xl hover:scale-105 transition-transform">
+                    <div class="text-xs font-bold text-slate-400 uppercase mb-2">入驻组织机构</div>
+                    <div class="text-3xl lg:text-4xl data-gradient-text">1,240 <span class="text-lg text-slate-500">家</span></div>
+                    <div class="text-[10px] text-blue-500 font-bold mt-2 bg-blue-50 inline-block px-2 rounded">高企占比 11.7%</div>
+                </div>
+                <div class="glass-card p-6 text-center rounded-2xl hover:scale-105 transition-transform">
+                    <div class="text-xs font-bold text-slate-400 uppercase mb-2">总技术交易金额</div>
+                    <div class="text-3xl lg:text-4xl data-gradient-text">32.8 <span class="text-lg text-slate-500">亿</span></div>
+                    <div class="text-[10px] text-orange-500 font-bold mt-2 bg-orange-50 inline-block px-2 rounded">生物医药 18.5亿</div>
+                </div>
+            </div>
+
+            <div class="glass-card flex-1 relative flex flex-col rounded-3xl group map-stage">
+                <div class="absolute top-0 left-0 w-full p-4 z-30 flex justify-between items-start pointer-events-none">
+                    <div class="pointer-events-auto">
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2 text-lg">
+                            <i class="fa-solid fa-map-location-dot text-blue-600"></i> 区域产业图谱
+                        </h3>
+                        <p class="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Digital Twin · SIP Zone B</p>
+                    </div>
+                    
+                    <div class="bg-white/90 backdrop-blur border border-slate-200 p-1.5 rounded-xl shadow-lg flex flex-col gap-1 pointer-events-auto">
+                        <button onclick="switchMapLayer('all')" class="map-layer-btn active flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all border-l-2 border-transparent">
+                            <span class="w-2 h-2 rounded-full bg-slate-500"></span> 全部显示
+                        </button>
+                        <button onclick="switchMapLayer('bio')" class="map-layer-btn flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-all border-l-2 border-transparent">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span> 生物医药
+                        </button>
+                        <button onclick="switchMapLayer('ic')" class="map-layer-btn flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 transition-all border-l-2 border-transparent">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> 集成电路
+                        </button>
+                        <button onclick="switchMapLayer('plat')" class="map-layer-btn flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-purple-50 hover:text-purple-600 transition-all border-l-2 border-transparent">
+                            <span class="w-2 h-2 rounded-full bg-purple-500"></span> 科创平台
+                        </button>
+                    </div>
+                </div>
+
+                <div class="map-plane">
+                    <div class="map-river"></div>
+                    
+                    <div id="map-nodes-container" class="absolute inset-0 w-full h-full">
+                        </div>
+                </div>
+
+                <div class="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-md p-5 rounded-2xl shadow-2xl border border-slate-100 z-30 flex justify-between items-center transition-all duration-300 transform translate-y-0" id="map-detail-panel">
+                    <div class="flex items-center gap-5">
+                        <div id="panel-icon" class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-3xl shadow-inner">
+                            <i class="fa-solid fa-flask"></i>
+                        </div>
+                        <div>
+                            <h4 id="panel-title" class="font-bold text-slate-800 text-xl">生物医药产业园</h4>
+                            <div class="flex gap-4 text-xs text-slate-500 mt-1.5">
+                                <span class="bg-slate-100 px-2 py-1 rounded-md"><i class="fa-solid fa-building mr-1.5 text-slate-400"></i>入驻: <b id="panel-count" class="text-slate-800">186</b></span>
+                                <span class="bg-slate-100 px-2 py-1 rounded-md"><i class="fa-solid fa-star mr-1.5 text-slate-400"></i>高企: <b id="panel-high" class="text-slate-800">42</b></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right pl-6 border-l border-slate-200">
+                        <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">产值/营收</div>
+                        <div class="text-3xl font-black text-slate-800"><span id="panel-value">128.5</span> <span class="text-sm font-normal text-slate-400">亿</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-3 flex flex-col gap-6 h-full">
+            <div class="glass-card p-6 flex-1 flex flex-col rounded-3xl">
+                <div class="flex items-center gap-3 mb-4 shrink-0">
+                    <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 shadow-sm">
+                        <i class="fa-solid fa-chart-network"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800">行业综合竞争力</h3>
+                        <p class="text-[10px] text-slate-400 uppercase tracking-widest">Industry Benchmarking</p>
+                    </div>
+                </div>
+                <div id="radar-chart" class="w-full flex-1"></div>
+                <div class="space-y-3 mt-4">
+                    <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <span class="text-xs font-bold text-slate-500">生物医药产业指数</span>
+                        <span class="text-sm font-black text-blue-600">92.5</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <span class="text-xs font-bold text-slate-500">集成电路强链率</span>
+                        <span class="text-sm font-black text-emerald-600">88.2%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 h-auto rounded-3xl border-t-4 border-t-orange-500">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-slate-800 text-sm">成果转化监测</h3>
+                    <span class="text-[10px] status-pulse pl-4 text-green-600 font-bold uppercase relative ml-2">实时同步</span>
+                </div>
+                <div class="space-y-5">
+                    <div>
+                        <div class="flex justify-between text-[10px] mb-1 uppercase font-bold text-slate-400">
+                            <span>小试阶段项目</span>
+                            <span class="text-slate-600">45%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div class="bg-blue-500 h-full w-[45%] rounded-full"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-[10px] mb-1 uppercase font-bold text-slate-400">
+                            <span>中试环节综合数据</span>
+                            <span class="text-slate-600">20%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div class="bg-emerald-500 h-full w-[20%] rounded-full"></div>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 italic mt-2 border-t border-slate-100 pt-2">
+                        <i class="fa-solid fa-circle-info mr-1"></i> 数据基于园区所辖企业技术登记备案库自动计算
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../js/components/navbar.js"></script>
+    
+    <script>
+        // 1. 定义 20+ 个真实的苏州/模拟产业节点数据
+        // type: bio (生物医药), ic (集成电路), plat (平台)
+        const mapPoints = [
+            // --- Bio Nodes (Top-Left / Center Area) ---
+            { id: 1, name: "信达生物", type: "bio", x: 25, y: 30, val: "45.2亿" },
+            { id: 2, name: "基石药业", type: "bio", x: 32, y: 25, val: "22.1亿" },
+            { id: 3, name: "纳微科技", type: "bio", x: 20, y: 45, val: "18.5亿" },
+            { id: 4, name: "博瑞医药", type: "bio", x: 35, y: 40, val: "15.3亿" },
+            { id: 5, name: "盛世泰科", type: "bio", x: 15, y: 35, val: "8.2亿" },
+            { id: 6, name: "亚盛医药", type: "bio", x: 28, y: 55, val: "12.4亿" },
+            { id: 7, name: "二叶制药", type: "bio", x: 40, y: 20, val: "30.1亿" },
+            { id: 8, name: "康宁杰瑞", type: "bio", x: 18, y: 50, val: "11.5亿" },
+            
+            // --- IC Nodes (Center / Bottom-Right Area) ---
+            { id: 9, name: "晶方科技", type: "ic", x: 65, y: 60, val: "55.8亿" },
+            { id: 10, name: "敏芯微", type: "ic", x: 72, y: 55, val: "10.2亿" },
+            { id: 11, name: "纳芯微", type: "ic", x: 60, y: 70, val: "24.5亿" },
+            { id: 12, name: "盛科通信", type: "ic", x: 78, y: 65, val: "14.3亿" },
+            { id: 13, name: "硅睿科技", type: "ic", x: 55, y: 65, val: "9.8亿" },
+            { id: 14, name: "汉天下", type: "ic", x: 80, y: 50, val: "16.7亿" },
+            { id: 15, name: "华兴源创", type: "ic", x: 68, y: 75, val: "42.0亿" },
+            { id: 16, name: "旭创科技", type: "ic", x: 85, y: 70, val: "68.2亿" },
+
+            // --- Platform Nodes (Scattered / Central) ---
+            { id: 17, name: "中科院纳米所", type: "plat", x: 50, y: 40, val: "科研机构" },
+            { id: 18, name: "独角兽孵化器", type: "plat", x: 45, y: 55, val: "孵化平台" },
+            { id: 19, name: "生物医药产业园", type: "plat", x: 30, y: 35, val: "产业基地" },
+            { id: 20, name: "华为云创新中心", type: "plat", x: 60, y: 30, val: "技术平台" }
+        ];
+
+        // 样式配置映射
+        const typeConfig = {
+            bio: { 
+                icon: 'fa-flask', 
+                color: 'blue', 
+                gradient: 'from-blue-600 to-cyan-400',
+                shadow: 'shadow-blue-500/40',
+                labelBg: 'border-blue-100',
+                panelTitle: '生物医药产业园',
+                panelIcon: 'text-blue-600 bg-blue-50',
+                stats: { count: 186, high: 42, val: '128.5' }
+            },
+            ic: { 
+                icon: 'fa-microchip', 
+                color: 'emerald', 
+                gradient: 'from-emerald-600 to-teal-400',
+                shadow: 'shadow-emerald-500/40',
+                labelBg: 'border-emerald-100',
+                panelTitle: '集成电路创新中心',
+                panelIcon: 'text-emerald-600 bg-emerald-50',
+                stats: { count: 95, high: 28, val: '89.2' }
+            },
+            plat: { 
+                icon: 'fa-rocket', 
+                color: 'purple', 
+                gradient: 'from-purple-600 to-fuchsia-400',
+                shadow: 'shadow-purple-500/40',
+                labelBg: 'border-purple-100',
+                panelTitle: '科创服务平台',
+                panelIcon: 'text-purple-600 bg-purple-50',
+                stats: { count: 34, high: 12, val: '15.6' }
+            }
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMapNodes();
+            initRadarChart();
+        });
+
+        // 渲染地图节点
+        function renderMapNodes() {
+            const container = document.getElementById('map-nodes-container');
+            container.innerHTML = '';
+
+            mapPoints.forEach((point, index) => {
+                const cfg = typeConfig[point.type];
+                
+                // 创建节点 DOM
+                const node = document.createElement('div');
+                node.className = `map-node-wrapper layer-${point.type} node-enter`;
+                // 使用百分比定位
+                node.style.left = `${point.x}%`;
+                node.style.top = `${point.y}%`;
+                node.style.animationDelay = `${index * 50}ms`; // 错峰动画
+                
+                // 点击事件
+                node.onclick = () => showNodeDetail(point);
+
+                node.innerHTML = `
+                    <div class="relative group/marker">
+                        ${point.type !== 'plat' ? `<div class="absolute -inset-4 bg-${cfg.color}-500/20 rounded-full animate-ping"></div>` : ''}
+                        
+                        <div class="relative w-10 h-10 bg-gradient-to-tr ${cfg.gradient} rounded-xl ${cfg.shadow} shadow-lg flex items-center justify-center text-white border-2 border-white transition-transform duration-300">
+                            <i class="fa-solid ${cfg.icon} text-sm"></i>
+                        </div>
+
+                        <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 bg-white/95 backdrop-blur px-3 py-1.5 rounded-lg shadow-md border ${cfg.labelBg} text-center w-max opacity-0 group-hover/marker:opacity-100 transition-opacity pointer-events-none z-20">
+                            <div class="text-xs font-bold text-slate-700">${point.name}</div>
+                            <div class="text-[10px] text-slate-400">${point.val}</div>
+                            <div class="w-2 h-2 bg-white border-b border-r ${cfg.labelBg} absolute -bottom-1 left-1/2 -translate-x-1/2 rotate-45"></div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(node);
+            });
+        }
+
+        // 切换图层
+        function switchMapLayer(layerType) {
+            // 按钮高亮
+            document.querySelectorAll('.map-layer-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-blue-50', 'text-blue-600', 'border-blue-600');
+            });
+            event.currentTarget.classList.add('active', 'bg-blue-50', 'text-blue-600', 'border-blue-600');
+
+            // 筛选节点
+            const nodes = document.querySelectorAll('.map-node-wrapper');
+            nodes.forEach(node => {
+                const isMatch = layerType === 'all' || node.classList.contains(`layer-${layerType}`);
+                if (isMatch) {
+                    node.style.opacity = '1';
+                    node.style.filter = 'none';
+                    node.style.pointerEvents = 'auto';
+                } else {
+                    node.style.opacity = '0.1';
+                    node.style.filter = 'grayscale(100%)';
+                    node.style.pointerEvents = 'none';
+                }
+            });
+
+            // 更新面板统计数据
+            if (layerType !== 'all') {
+                updatePanelStats(typeConfig[layerType]);
+            }
+        }
+
+        // 点击单个节点
+        function showNodeDetail(point) {
+            const cfg = typeConfig[point.type];
+            const panel = document.getElementById('map-detail-panel');
+            
+            // 简单更新面板标题为选中的企业
+            document.getElementById('panel-title').innerText = point.name;
+            document.getElementById('panel-value').innerText = point.val.replace('亿', '');
+            
+            // 恢复图标
+            const iconBox = document.getElementById('panel-icon');
+            iconBox.className = `w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-inner transition-colors duration-300 ${cfg.panelIcon}`;
+            iconBox.innerHTML = `<i class="fa-solid ${cfg.icon}"></i>`;
+        }
+
+        // 更新面板通用统计
+        function updatePanelStats(cfg) {
+            const panel = document.getElementById('map-detail-panel');
+            panel.classList.add('opacity-50', 'translate-y-2');
+            
+            setTimeout(() => {
+                document.getElementById('panel-title').innerText = cfg.panelTitle;
+                document.getElementById('panel-count').innerText = cfg.stats.count;
+                document.getElementById('panel-high').innerText = cfg.stats.high;
+                document.getElementById('panel-value').innerText = cfg.stats.val;
+                
+                const iconBox = document.getElementById('panel-icon');
+                iconBox.className = `w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-inner transition-colors duration-300 ${cfg.panelIcon}`;
+                iconBox.innerHTML = `<i class="fa-solid ${cfg.icon}"></i>`;
+                
+                panel.classList.remove('opacity-50', 'translate-y-2');
+            }, 150);
+        }
+
+        // 初始化雷达图
+        function initRadarChart() {
+            const chartDom = document.getElementById('radar-chart');
+            if(!chartDom) return;
+            const myChart = echarts.init(chartDom);
+            const option = {
+                color: ['#3B82F6'],
+                tooltip: {},
+                radar: {
+                    indicator: [
+                        { name: '技术交易', max: 100 },
+                        { name: '人才储备', max: 100 },
+                        { name: '专利产出', max: 100 },
+                        { name: '资金支持', max: 100 },
+                        { name: '转化效率', max: 100 }
+                    ],
+                    center: ['50%', '50%'], radius: '65%',
+                    axisName: { color: '#64748b', fontSize: 10, fontWeight: 'bold' },
+                    splitLine: { lineStyle: { color: 'rgba(203, 213, 225, 0.5)' } },
+                    splitArea: { show: false }
+                },
+                series: [{
+                    type: 'radar',
+                    data: [{
+                        value: [85, 90, 78, 95, 82],
+                        name: '园区综合指标',
+                        symbol: 'circle', symbolSize: 6,
+                        itemStyle: { color: '#2563EB', borderColor: '#fff', borderWidth: 2 },
+                        areaStyle: { color: 'rgba(37, 99, 235, 0.2)' }
+                    }]
+                }]
+            };
+            myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize());
+        }
+    </script>
+</body>
+</html>

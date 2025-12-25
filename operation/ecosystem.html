@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个性化园企协同网络 - 苏州产业园区运营大脑</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../../css/style.css" rel="stylesheet">
+    <style>
+        .filter-btn.active { color: #2563EB; border-bottom-color: #2563EB; font-weight: 700; }
+        .tag-innovation { background: #F3E8FF; color: #7E22CE; }
+        .tag-resource { background: #DCFCE7; color: #15803D; }
+        .tag-cooperation { background: #DBEAFE; color: #1D4ED8; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-600 pt-24">
+
+    <div id="navbar-placeholder"></div>
+
+    <main class="container mx-auto px-4 lg:px-12 py-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
+            <div>
+                <span class="text-blue-600 font-bold tracking-widest text-xs uppercase">Ecosystem Network</span>
+                <h2 class="text-3xl font-extrabold text-slate-800 mt-1">个性化园企协同网络</h2>
+                <p class="text-slate-400 mt-2 text-sm">支撑信息共享、合作对接、创新协同与服务协同四大业务场景</p>
+            </div>
+            <div class="flex gap-3 mt-4 md:mt-0">
+                <button class="bg-white text-slate-700 border border-slate-200 px-5 py-2.5 rounded-xl font-bold hover:bg-slate-50 transition-all text-sm">
+                    <i class="fa-solid fa-bullhorn mr-2"></i>发布行业新闻/动态
+                </button>
+                <button class="bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg hover:bg-slate-800 transition-all flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-plus"></i> 发起协同申请
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-8">
+                <div class="flex flex-wrap gap-6 border-b border-slate-200 mb-8 text-sm overflow-x-auto">
+                    <button class="filter-btn active pb-3 border-b-2 transition-all">全部动态</button>
+                    <button class="filter-btn pb-3 border-b-2 border-transparent text-slate-400 hover:text-blue-600 transition-all">合作对接 (产业链/人才)</button>
+                    <button class="filter-btn pb-3 border-b-2 border-transparent text-slate-400 hover:text-blue-600 transition-all">创新协同 (研发/转化)</button>
+                    <button class="filter-btn pb-3 border-b-2 border-transparent text-slate-400 hover:text-blue-600 transition-all">资源共享 (闲置/政策)</button>
+                    <button class="filter-btn pb-3 border-b-2 border-transparent text-slate-400 hover:text-blue-600 transition-all">行业动态</button>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover-card flex flex-col md:flex-row gap-6 items-start">
+                        <div class="w-14 h-14 bg-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl shrink-0 shadow-lg shadow-purple-100">
+                            <i class="fa-solid fa-microchip"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start">
+                                <h4 class="text-xl font-bold text-slate-800">【揭榜挂帅】先进封装散热技术联合攻关</h4>
+                                <span class="tag-innovation text-xs px-2 py-1 rounded-full font-bold">创新协同</span>
+                            </div>
+                            <p class="text-slate-500 mt-2 text-sm leading-relaxed">寻求具备热力学分析能力的科研机构组建联合研发团队。对接苏州二类节点成果库，支持后续成果快速转化。</p>
+                            <div class="flex items-center gap-6 mt-6 text-xs text-slate-400">
+                                <span><i class="fa-solid fa-flask-vial mr-1"></i> 技术需求发布</span>
+                                <span><i class="fa-solid fa-coins mr-1"></i> 预算: 200万</span>
+                                <span><i class="fa-solid fa-shield-halved mr-1 text-blue-500"></i> 火炬链存证</span>
+                            </div>
+                        </div>
+                        <button class="bg-purple-600 text-white px-6 py-2 rounded-lg text-sm font-bold self-center md:self-end hover:bg-purple-700 transition-colors">揭榜挂帅</button>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover-card flex flex-col md:flex-row gap-6 items-start">
+                        <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl shrink-0 shadow-lg shadow-blue-100">
+                            <i class="fa-solid fa-user-group"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start">
+                                <h4 class="text-xl font-bold text-slate-800">IC设计人才定制化培养意向发布</h4>
+                                <span class="tag-cooperation text-xs px-2 py-1 rounded-full font-bold">人才对接</span>
+                            </div>
+                            <p class="text-slate-500 mt-2 text-sm leading-relaxed">基于园区集成电路产业画像，匹配符合要求的硕博人才供给。实现供需双方一站式匹配。</p>
+                            <div class="flex items-center gap-6 mt-6 text-xs text-slate-400">
+                                <span><i class="fa-solid fa-building mr-1"></i> 发布企业：某半导体领军企业</span>
+                                <span><i class="fa-solid fa-check-double mr-1 text-green-500"></i> AI 已匹配 5 所院校</span>
+                            </div>
+                        </div>
+                        <button class="bg-slate-900 text-white px-6 py-2 rounded-lg text-sm font-bold self-center md:self-end hover:bg-slate-800 transition-colors">申请匹配</button>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover-card flex flex-col md:flex-row gap-6 items-start">
+                        <div class="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center text-white text-2xl shrink-0 shadow-lg shadow-emerald-100">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start">
+                                <h4 class="text-xl font-bold text-slate-800">2025年研发加计扣除政策深度解读 (苏州版)</h4>
+                                <span class="tag-resource text-xs px-2 py-1 rounded-full font-bold">政策推送</span>
+                            </div>
+                            <p class="text-slate-500 mt-2 text-sm leading-relaxed">集成园区个性化政策推送，支持企业在线提交政策执行反馈，助力政策效果精准评估。</p>
+                            <div class="flex items-center gap-6 mt-6 text-xs text-slate-400">
+                                <span><i class="fa-solid fa-user-shield mr-1"></i> 官方权威解读</span>
+                                <span class="text-blue-600 cursor-pointer hover:underline"><i class="fa-solid fa-comment-dots mr-1"></i> 提交企业反馈</span>
+                            </div>
+                        </div>
+                        <button class="border-2 border-emerald-500 text-emerald-500 px-6 py-2 rounded-lg text-sm font-bold self-center md:self-end hover:bg-emerald-50">查看详情</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4 space-y-8">
+                <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                        <h5 class="font-bold text-slate-800">AI 智能撮合引擎</h5>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mb-6 leading-relaxed">对接总平台数据实验室 AI 能力，基于苏州区域产业图谱为您的协同需求精准画像。</p>
+                    
+                    <div class="bg-slate-50 rounded-2xl p-5 border border-blue-100 relative group cursor-pointer hover:border-blue-300 transition-all">
+                        <div class="absolute top-0 right-0 bg-blue-600 text-white text-[10px] px-3 py-1 rounded-bl-xl font-bold uppercase tracking-tighter">Matching 96%</div>
+                        <h6 class="font-bold text-slate-800 pr-12 text-sm">苏州某自动化研究中心</h6>
+                        <p class="text-[10px] text-slate-400 mt-2">擅长：高端装备制造 / 视觉算法</p>
+                        <div class="mt-4 flex items-center justify-between">
+                            <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded">可组建研发团队</span>
+                            <i class="fa-solid fa-circle-chevron-right text-blue-600 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
+
+                    <button class="w-full mt-6 py-3 text-xs text-blue-600 font-bold bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors">查看详细合作画像</button>
+                </div>
+
+                <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+                    <h5 class="font-bold text-slate-800 mb-4">公共服务协同站</h5>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="p-3 bg-slate-50 rounded-xl border border-transparent hover:border-blue-200 cursor-pointer">
+                            <i class="fa-solid fa-flask text-blue-500 mb-2"></i>
+                            <span class="text-[11px] font-bold block">共享实验平台</span>
+                            <span class="text-[9px] text-slate-400">一键预约响应</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-transparent hover:border-blue-200 cursor-pointer">
+                            <i class="fa-solid fa-scale-balanced text-orange-500 mb-2"></i>
+                            <span class="text-[11px] font-bold block">技术确权服务</span>
+                            <span class="text-[9px] text-slate-400">律所协同对接</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
+                    <div class="relative z-10">
+                        <p class="text-[10px] text-slate-400 mb-6 tracking-widest uppercase">区域协同态势</p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <div class="text-3xl font-extrabold tracking-tighter">1,280</div>
+                                <div class="text-[9px] text-slate-500 mt-1 uppercase">活跃协同任务</div>
+                            </div>
+                            <div>
+                                <div class="text-3xl font-extrabold text-emerald-400 tracking-tighter">85%</div>
+                                <div class="text-[9px] text-slate-500 mt-1 uppercase">协同成功率</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute -right-4 -bottom-4 opacity-10 text-8xl">
+                        <i class="fa-solid fa-network-wired"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../js/components/navbar.js"></script>
+    <script>
+        // 简单的筛选交互示例
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'border-blue-600', 'text-slate-900'));
+                this.classList.add('active', 'border-blue-600', 'text-slate-900');
+            });
+        });
+    </script>
+</body>
+</html>
